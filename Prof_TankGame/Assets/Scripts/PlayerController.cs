@@ -12,8 +12,7 @@ public class PlayerController : MonoBehaviour
     public float bulletSpeed;
     public float bulletKnockBack;
 
-
-
+    //public float shakeThreshHold;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,11 +24,26 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        
+        //detect shake
+        /*
+        if(Input.acceleration.magnitude > shakeThreshHold)
+        {
+            Destroy(gameObject);
+        }
+        */
+        //float h = Input.GetAxis("Horizontal");
+        //float v = Input.GetAxis("Vertical");
+        float h = Input.acceleration.x;
+        float v = Input.acceleration.y;
+
         Physics.gravity = new Vector3(h, 0, v) * speed;
 
-        transform.forward = getMousePosInWorld() - transform.position;
+        //transform.forward = getScreenPosInWorld(Input.mousePosition) - transform.position;
+        if (Input.touches.Length > 0)
+        {
+            transform.forward = getScreenPosInWorld(Input.touches[0].position) - transform.position;
+        }
 
         if(Input.GetButtonDown("Fire1"))
         {
@@ -40,10 +54,10 @@ public class PlayerController : MonoBehaviour
 
     }
     
-    public Vector3 getMousePosInWorld()
+    public Vector3 getScreenPosInWorld(Vector3 screenPos)
     {
         RaycastHit hitInfo;
-        Ray r = cam.ScreenPointToRay(Input.mousePosition);
+        Ray r = cam.ScreenPointToRay(screenPos);
         if(Physics.Raycast(r, out hitInfo))
         {
             Vector3 hitSpot = hitInfo.point;
